@@ -151,6 +151,20 @@ export default function GameOverView({ player, onRestart }: GameOverViewProps) {
               </div>
             </div>
 
+            {/* Winner Official Certificate & Redemption Code */}
+            <div className="my-5 p-4 bg-gradient-to-r from-amber-950/45 via-yellow-950/30 to-amber-950/45 border-2 border-amber-500/40 rounded-xl max-w-md mx-auto relative overflow-hidden shadow-xl shadow-black/80">
+              <p className="text-[10px] font-mono font-bold tracking-[0.2em] text-amber-400 uppercase mb-1 flex items-center justify-center gap-1">
+                <Trophy className="w-3.5 h-3.5 text-yellow-400 animate-pulse animate-bounce" />
+                <span>★ CÓDIGO DE RESGATE DO VENCEDOR ★</span>
+              </p>
+              <p className="text-xs text-slate-350 leading-relaxed font-sans max-w-xs mx-auto">
+                Parabéns! Você passou com maestria em todos os exames rústicos e didáticos de Geografia!
+              </p>
+              <div className="mt-3.5 inline-block px-5 py-2.5 bg-zinc-950/95 border-2 border-dashed border-amber-400 text-xl font-mono font-black text-amber-300 tracking-[0.18em] select-all shadow-inner animate-pulse">
+                WINNER_FILHA_26
+              </div>
+            </div>
+
             {/* Signature Area */}
             <div className="grid grid-cols-2 gap-8 pt-8 text-center font-mono text-[9px] text-slate-500 max-w-md mx-auto border-t border-zinc-800/80">
               <div>
