@@ -288,18 +288,8 @@ export default function GameIntro({ onStart, isMuted, onToggleMute }: GameIntroP
             </ul>
           </div>
 
-          {/* Play CTA + Sound Toggle */}
+          {/* Play CTA */}
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={toggleSound}
-              id="sound-toggle-btn"
-              className={`p-3 rounded-lg border text-sm font-semibold transition-all cursor-pointer ${audioEnabled ? 'bg-emerald-950/40 border-emerald-800 text-emerald-400 hover:bg-emerald-900/30' : 'bg-rose-950/20 border-rose-900/40 text-rose-400 hover:bg-rose-900/30'}`}
-              title={audioEnabled ? "Mutar áudio" : "Ativar áudio"}
-            >
-              {audioEnabled ? <Volume2 className="w-5 h-5 animate-bounce" /> : <VolumeX className="w-5 h-5 text-rose-500 animate-pulse" />}
-            </button>
-
             <button
               type="submit"
               id="btn-start-game"

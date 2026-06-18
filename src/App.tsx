@@ -99,6 +99,7 @@ export default function App() {
               onOpenNotebook={() => setIsNotebookOpen(true)}
               isMuted={audioMuted}
               onToggleMute={handleToggleMute}
+              onGoToHome={handleRestartGame}
             />
           </motion.div>
         )}

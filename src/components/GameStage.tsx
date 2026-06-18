@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Target, Hexagon, Scale, CircleDot, Grid, Shield, Compass, Users, Building, Train,
   BookOpen, HelpCircle, Lightbulb, CheckCircle2, AlertTriangle, Volume2, VolumeX, Coins, ArrowRight, CornerDownRight,
-  Timer, Sparkles, Zap, AlertCircle, ThumbsUp, Circle, Triangle, Square
+  Timer, Sparkles, Zap, AlertCircle, ThumbsUp, Circle, Triangle, Square, RotateCcw, ArrowLeft
 } from 'lucide-react';
 import { Player, Question, QuizState } from '../types';
 import { GEOGRAPHY_QUESTIONS } from '../questions';
@@ -20,14 +20,16 @@ interface GameStageProps {
   onOpenNotebook: () => void;
   isMuted?: boolean;
   onToggleMute?: () => void;
+  onGoToHome?: () => void;
 }
 
-export default function GameStage({ player, onQuestionCompleted, onFinishGame, onOpenNotebook, isMuted, onToggleMute }: GameStageProps) {
+export default function GameStage({ player, onQuestionCompleted, onFinishGame, onOpenNotebook, isMuted, onToggleMute, onGoToHome }: GameStageProps) {
   const [activeQuestionIdx, setActiveQuestionIdx] = useState(0);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [isCorrectlyAnswered, setIsCorrectlyAnswered] = useState(false);
   const [attemptsThisQuestion, setAttemptsThisQuestion] = useState(0);
   const [audioEnabled, setAudioEnabled] = useState(isMuted === undefined ? !playSound.getMuteState() : !isMuted);
+  const [showRestartConfirm, setShowRestartConfirm] = useState(false);
 
   // Sync state if prop changes
   useEffect(() => {
@@ -492,8 +494,42 @@ export default function GameStage({ player, onQuestionCompleted, onFinishGame, o
             </div>
           </div>
 
-          {/* Study Notebook & Audio CTAs */}
-          <div className="flex gap-2">
+          {/* Study Notebook & Restart CTAs */}
+          <div className="flex items-center gap-2">
+            {onGoToHome && (
+              <div className="flex gap-1.5">
+                {!showRestartConfirm ? (
+                  <button
+                    onClick={() => setShowRestartConfirm(true)}
+                    className="px-3.5 py-2 bg-zinc-800/80 hover:bg-zinc-700 text-slate-350 hover:text-white rounded-lg border border-zinc-700 transition-all flex items-center gap-1.5 text-xs font-semibold select-none cursor-pointer"
+                    title="Voltar ao início para recomeçar o jogo com novo jogador ou avatar"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Recomeçar</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-1 bg-zinc-950/40 p-1 rounded-lg border border-zinc-800">
+                    <button
+                      onClick={() => {
+                        onGoToHome();
+                        setShowRestartConfirm(false);
+                      }}
+                      className="px-2.5 py-1 bg-rose-950 hover:bg-rose-900 border border-rose-600 text-rose-250 rounded-md transition-all flex items-center text-xs font-bold animate-pulse cursor-pointer"
+                      title="Confirmar reiniciar jogo"
+                    >
+                      Sim, sair
+                    </button>
+                    <button
+                      onClick={() => setShowRestartConfirm(false)}
+                      className="px-2 py-1 bg-zinc-900 hover:bg-zinc-800/90 text-slate-400 rounded-md transition-all text-xs cursor-pointer select-none"
+                    >
+                      Não
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <button
               onClick={onOpenNotebook}
               id="study-companion-trigger"
@@ -502,14 +538,6 @@ export default function GameStage({ player, onQuestionCompleted, onFinishGame, o
             >
               <BookOpen className="w-4 h-4" />
               <span>Consultar Caderno</span>
-            </button>
-
-            <button
-              onClick={handleToggleSound}
-              className={`p-2.5 rounded-lg border transition-all cursor-pointer ${audioEnabled ? 'bg-zinc-800 border-zinc-700 text-emerald-450 hover:bg-zinc-700' : 'bg-rose-950/20 border-rose-900/40 text-rose-500 hover:bg-rose-900/30'}`}
-              title={audioEnabled ? "Mutar efeitos sonoros" : "Ativar efeitos sonoros"}
-            >
-              {audioEnabled ? <Volume2 className="w-4 h-4 animate-bounce" /> : <VolumeX className="w-4 h-4 text-rose-500 animate-pulse" />}
             </button>
           </div>
         </div>
