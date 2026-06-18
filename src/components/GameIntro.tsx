@@ -3,22 +3,30 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { Play, Volume2, ShieldAlert, Award, Star, Circle, Triangle, Square, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Play, Volume2, VolumeX, ShieldAlert, Award, Star, Circle, Triangle, Square, Sparkles } from 'lucide-react';
 import { Player } from '../types';
 import { playSound } from '../utils/audio';
 
 interface GameIntroProps {
   onStart: (player: Player) => void;
+  isMuted?: boolean;
+  onToggleMute?: () => void;
 }
 
-export default function GameIntro({ onStart }: GameIntroProps) {
+export default function GameIntro({ onStart, isMuted, onToggleMute }: GameIntroProps) {
   const [name, setName] = useState('');
   const [playerNum, setPlayerNum] = useState('456');
   const [selectedAvatar, setSelectedAvatar] = useState('circle');
   const [avatarColor, setAvatarColor] = useState('bg-teal-700 hover:bg-teal-600');
-  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [audioEnabled, setAudioEnabled] = useState(isMuted === undefined ? !playSound.getMuteState() : !isMuted);
   const [guardPersonality, setGuardPersonality] = useState<'sarcastic' | 'cute' | 'vip'>('sarcastic');
+
+  useEffect(() => {
+    if (isMuted !== undefined) {
+      setAudioEnabled(!isMuted);
+    }
+  }, [isMuted]);
 
   const colors = [
     { name: 'Verde Jogador', class: 'bg-teal-700 hover:bg-teal-600 ring-teal-500' },
@@ -79,10 +87,14 @@ export default function GameIntro({ onStart }: GameIntroProps) {
   };
 
   const toggleSound = () => {
-    const isMuted = playSound.toggleMute();
-    setAudioEnabled(!isMuted);
-    if (!isMuted) {
-      playSound.playIntro();
+    if (onToggleMute) {
+      onToggleMute();
+    } else {
+      const isMuted = playSound.toggleMute();
+      setAudioEnabled(!isMuted);
+      if (!isMuted) {
+        playSound.playIntro();
+      }
     }
   };
 
@@ -282,10 +294,10 @@ export default function GameIntro({ onStart }: GameIntroProps) {
               type="button"
               onClick={toggleSound}
               id="sound-toggle-btn"
-              className={`p-3 rounded-lg border text-sm font-semibold transition-all ${audioEnabled ? 'bg-emerald-950/40 border-emerald-800 text-emerald-400 hover:bg-emerald-900/30' : 'bg-zinc-950 border-zinc-800 text-slate-500 hover:text-slate-400'}`}
-              title="Ativar ou desativar áudio"
+              className={`p-3 rounded-lg border text-sm font-semibold transition-all cursor-pointer ${audioEnabled ? 'bg-emerald-950/40 border-emerald-800 text-emerald-400 hover:bg-emerald-900/30' : 'bg-rose-950/20 border-rose-900/40 text-rose-400 hover:bg-rose-900/30'}`}
+              title={audioEnabled ? "Mutar áudio" : "Ativar áudio"}
             >
-              <Volume2 className="w-5 h-5" />
+              {audioEnabled ? <Volume2 className="w-5 h-5 animate-bounce" /> : <VolumeX className="w-5 h-5 text-rose-500 animate-pulse" />}
             </button>
 
             <button

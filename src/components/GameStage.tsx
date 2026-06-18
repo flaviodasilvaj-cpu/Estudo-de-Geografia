@@ -18,14 +18,23 @@ interface GameStageProps {
   onQuestionCompleted: (updatedPlayer: Player) => void;
   onFinishGame: (finalPlayer: Player) => void;
   onOpenNotebook: () => void;
+  isMuted?: boolean;
+  onToggleMute?: () => void;
 }
 
-export default function GameStage({ player, onQuestionCompleted, onFinishGame, onOpenNotebook }: GameStageProps) {
+export default function GameStage({ player, onQuestionCompleted, onFinishGame, onOpenNotebook, isMuted, onToggleMute }: GameStageProps) {
   const [activeQuestionIdx, setActiveQuestionIdx] = useState(0);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [isCorrectlyAnswered, setIsCorrectlyAnswered] = useState(false);
   const [attemptsThisQuestion, setAttemptsThisQuestion] = useState(0);
-  const [audioEnabled, setAudioEnabled] = useState(!playSound.getMuteState());
+  const [audioEnabled, setAudioEnabled] = useState(isMuted === undefined ? !playSound.getMuteState() : !isMuted);
+
+  // Sync state if prop changes
+  useEffect(() => {
+    if (isMuted !== undefined) {
+      setAudioEnabled(!isMuted);
+    }
+  }, [isMuted]);
 
   // --- NEW GAMIFICATION STATES ---
   const [timeLeft, setTimeLeft] = useState(180);
@@ -72,10 +81,14 @@ export default function GameStage({ player, onQuestionCompleted, onFinishGame, o
   }, [isCorrectlyAnswered, transitionStage, isTimeOutOpen, activeQuestionIdx]);
 
   const handleToggleSound = () => {
-    const isMuted = playSound.toggleMute();
-    setAudioEnabled(!isMuted);
-    if (!isMuted) {
-      playSound.playCorrect();
+    if (onToggleMute) {
+      onToggleMute();
+    } else {
+      const isMuted = playSound.toggleMute();
+      setAudioEnabled(!isMuted);
+      if (!isMuted) {
+        playSound.playCorrect();
+      }
     }
   };
 
@@ -493,10 +506,10 @@ export default function GameStage({ player, onQuestionCompleted, onFinishGame, o
 
             <button
               onClick={handleToggleSound}
-              className="p-2.5 bg-zinc-800 hover:bg-zinc-700 text-slate-350 hover:text-white rounded-lg border border-zinc-700 transition-colors"
-              title={audioEnabled ? "Mutar" : "Desmutar"}
+              className={`p-2.5 rounded-lg border transition-all cursor-pointer ${audioEnabled ? 'bg-zinc-800 border-zinc-700 text-emerald-450 hover:bg-zinc-700' : 'bg-rose-950/20 border-rose-900/40 text-rose-500 hover:bg-rose-900/30'}`}
+              title={audioEnabled ? "Mutar efeitos sonoros" : "Ativar efeitos sonoros"}
             >
-              {audioEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              {audioEnabled ? <Volume2 className="w-4 h-4 animate-bounce" /> : <VolumeX className="w-4 h-4 text-rose-500 animate-pulse" />}
             </button>
           </div>
         </div>
