@@ -243,17 +243,19 @@ export default function GameStage({ player, onQuestionCompleted, onFinishGame, o
     playSound.playBribe();
     setLaserCharges(prev => prev - 1);
     
-    // Find incorrect option indices
+    // Find incorrect option indices that aren't already selected
     const wrongIndices: number[] = [];
     (currentQuestion.options || []).forEach((_, idx) => {
-      if (idx !== currentQuestion.correctIndex) {
+      if (idx !== currentQuestion.correctIndex && !selectedIndices.includes(idx)) {
         wrongIndices.push(idx);
       }
     });
 
-    // Randomly select 2 wrong options and add them to selected (graying them out)
+    if (wrongIndices.length === 0) return;
+
+    // Randomly select 1 wrong option and add to selected (graying it out)
     const shuffled = [...wrongIndices].sort(() => 0.5 - Math.random());
-    const toEliminate = shuffled.slice(0, 2);
+    const toEliminate = shuffled.slice(0, 1);
     setSelectedIndices(prev => [...prev, ...toEliminate]);
   };
 
@@ -638,27 +640,16 @@ export default function GameStage({ player, onQuestionCompleted, onFinishGame, o
               <span>Uso limitado</span>
             </div>
             
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={handleUseLaser}
                 disabled={laserCharges <= 0 || isCorrectlyAnswered || currentQuestion.type === 'typed'}
                 className={`py-1.5 px-2 rounded-lg border text-xs font-mono transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${laserCharges > 0 && !isCorrectlyAnswered && currentQuestion.type !== 'typed' ? 'bg-zinc-900 border-rose-900 text-rose-300 hover:border-rose-500 hover:bg-zinc-850' : 'bg-zinc-950 border-zinc-900 text-zinc-700 cursor-not-allowed'}`}
-                title={currentQuestion.type === 'typed' ? "Desativado para perguntas de redação!" : "Elimina 2 alternativas erradas instantaneamente!"}
+                title={currentQuestion.type === 'typed' ? "Desativado para perguntas de redação!" : "Elimina 1 alternativa errada instantaneamente!"}
               >
-                <span className="font-bold text-[10px] uppercase">○ Laser</span>
+                <span className="font-bold text-[10px] uppercase">○ Remover 1 Errada</span>
                 <span className="text-[9px] uppercase font-semibold text-rose-450">({laserCharges} cargas)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleUseBribe}
-                disabled={bribeCharges <= 0 || isCorrectlyAnswered}
-                className={`py-1.5 px-2 rounded-lg border text-xs font-mono transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer ${bribeCharges > 0 && !isCorrectlyAnswered ? 'bg-zinc-900 border-pink-900 text-pink-300 hover:border-pink-500 hover:bg-zinc-850' : 'bg-zinc-950 border-zinc-900 text-zinc-700 cursor-not-allowed'}`}
-                title="Sussurra em qual bloco (A/B ou C/D) ou quais conceitos-chave focar!"
-              >
-                <span className="font-bold text-[10px] uppercase">△ Pista</span>
-                <span className="text-[9px] uppercase font-semibold text-pink-450">({bribeCharges} carga)</span>
               </button>
 
               <button
