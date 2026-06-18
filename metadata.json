@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Prova Show - Geografia Round 6",
+  "description": "Um sistema gamificado de provas sobre o Espaço Rural, Urbano e Transportes no Brasil, baseado no formato e estética de Round 6, com dicas educativas e tentativas ilimitadas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
